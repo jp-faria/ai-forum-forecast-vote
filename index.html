@@ -1,0 +1,563 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#F8F4EE" />
+
+    <title>Vote no AI Forum Forecast</title>
+    <meta
+      name="description"
+      content="O AI Forum Forecast está na votação. Toque no botão e vote em menos de um minuto."
+    />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:title" content="Vote no AI Forum Forecast" />
+    <meta
+      property="og:description"
+      content="O AI Forum Forecast está na votação. Toque no botão e vote em menos de um minuto."
+    />
+    <meta property="og:image" content="/assets/og-image.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Vote no AI Forum Forecast" />
+    <meta
+      name="twitter:description"
+      content="O AI Forum Forecast está na votação. Toque no botão e vote em menos de um minuto."
+    />
+    <meta name="twitter:image" content="/assets/og-image.jpg" />
+
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="/assets/fonts/Inter-latin.woff2" />
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="/assets/fonts/Lora-400.woff2" />
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="/assets/fonts/Lora-400-italic.woff2" />
+
+    <style>
+      /* ==========================================================================
+         Fontes, self-hosted. Mesmos arquivos do AI Forum Forecast: Lora para o
+         headline, Inter para o resto. Lora-600 fica de fora porque o headline é
+         400, e o itálico tem arquivo próprio.
+         ========================================================================== */
+      @font-face {
+        font-family: 'Lora';
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url('/assets/fonts/Lora-400.woff2') format('woff2');
+      }
+      @font-face {
+        font-family: 'Lora';
+        font-style: italic;
+        font-weight: 400;
+        font-display: swap;
+        src: url('/assets/fonts/Lora-400-italic.woff2') format('woff2');
+      }
+      @font-face {
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 100 900;
+        font-display: swap;
+        src: url('/assets/fonts/Inter-latin.woff2') format('woff2');
+      }
+
+      /* ==========================================================================
+         Tokens. Camada semântica do projeto principal, escrita como canais RGB
+         para que rgb(var(--x) / .4) continue funcionando. Um estado só: esta
+         página não inverte, o cream é a identidade.
+         ========================================================================== */
+      :root {
+        color-scheme: light;
+
+        --c-canvas: 248 244 238;
+        --c-raised: 242 237 228;
+        --c-ink: 30 34 51;
+        --c-ink-soft: 107 102 96;
+        --c-ink-mute: 114 108 102;
+        --c-brand: 47 65 142;
+        --c-brand-hover: 36 49 103;
+
+        --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      html {
+        height: 100%;
+        -webkit-text-size-adjust: 100%;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100%;
+        background: rgb(var(--c-canvas));
+        color: rgb(var(--c-ink));
+        font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        -webkit-tap-highlight-color: transparent;
+        overflow-x: hidden;
+      }
+
+      :focus-visible {
+        outline: none;
+        box-shadow:
+          0 0 0 2px rgb(var(--c-canvas)),
+          0 0 0 4px rgb(var(--c-brand) / 0.7);
+      }
+
+      /* ==========================================================================
+         Backdrop. Quatro camadas fixas, na ordem do HeroBackdrop do projeto
+         principal: wash, campo radial, orb, grain. Nada se move de lugar; a
+         única animação é a banda de luz dentro da orb.
+         ========================================================================== */
+      .backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        overflow: hidden;
+        pointer-events: none;
+      }
+
+      .backdrop__wash {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          180deg,
+          rgb(var(--c-canvas)) 0%,
+          rgb(var(--c-canvas)) 45%,
+          rgb(var(--c-raised)) 100%
+        );
+      }
+
+      /* Um campo de marca só, no canto inferior esquerdo, bem desfocado. */
+      .backdrop__field {
+        /*
+         * Os deslocamentos são fração do próprio tamanho, e não vw, para que o
+         * campo continue ancorado no canto quando a viewport cresce. Em vw puro
+         * ele inunda metade de uma tela de desktop.
+         */
+        --field: min(120vw, 1000px);
+        position: absolute;
+        bottom: calc(var(--field) * -0.342);
+        left: calc(var(--field) * -0.367);
+        width: var(--field);
+        height: var(--field);
+        border-radius: 9999px;
+        filter: blur(80px);
+        background: radial-gradient(
+          closest-side,
+          rgb(var(--c-brand) / 0.34),
+          rgb(var(--c-brand) / 0) 100%
+        );
+      }
+
+      .backdrop__orb {
+        --orb: min(74vw, 430px);
+        position: absolute;
+        bottom: calc(var(--orb) * -0.338);
+        left: calc(var(--orb) * -0.311);
+        width: var(--orb);
+        height: var(--orb);
+      }
+
+      /*
+       * Grão de papel: ruído fractal em SVG, multiplicado a 4,5% e mascarado nas
+       * duas pontas para não terminar num corte reto.
+       */
+      .backdrop__grain {
+        position: absolute;
+        inset: 0;
+        opacity: 0.045;
+        mix-blend-mode: multiply;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+        background-size: 200px 200px;
+        -webkit-mask-image: linear-gradient(
+          to bottom,
+          transparent,
+          black 96px,
+          black calc(100% - 160px),
+          transparent
+        );
+        mask-image: linear-gradient(
+          to bottom,
+          transparent,
+          black 96px,
+          black calc(100% - 160px),
+          transparent
+        );
+      }
+
+      /* ==========================================================================
+         Coluna. 448px, a mesma largura de leitura do projeto principal.
+         ========================================================================== */
+      .shell {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        max-width: 28rem;
+        min-height: 100vh;
+        min-height: 100svh;
+        margin: 0 auto;
+        padding: 1.5rem 1.25rem calc(env(safe-area-inset-bottom, 0px) + 1.5rem);
+      }
+
+      .lockup {
+        flex-shrink: 0;
+      }
+
+      .lockup img {
+        display: block;
+        width: auto;
+        height: 3.5rem;
+        max-width: 100%;
+      }
+
+      .hero {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        justify-content: center;
+        padding: 2.5rem 0;
+      }
+
+      /* ==========================================================================
+         Headline. Lora 400, tracking negativo, tamanho fluido: o mesmo clamp do
+         hero do projeto principal.
+         ========================================================================== */
+      h1 {
+        margin: 0;
+        font-family: 'Lora', Georgia, 'Times New Roman', serif;
+        font-weight: 400;
+        font-size: clamp(2rem, 8.4vw, 3rem);
+        line-height: 1.1;
+        letter-spacing: -0.02em;
+      }
+
+      h1 em {
+        font-style: italic;
+        color: rgb(var(--c-brand));
+      }
+
+      /*
+       * Revelação palavra a palavra. Cada palavra sobe por trás de uma janela de
+       * overflow hidden, sem tocar em opacidade: o que aparece é o movimento, não
+       * um fade. O padding/margin negativo dá espaço para as descidas do g e do y.
+       */
+      .word {
+        display: inline-block;
+        overflow: hidden;
+        padding-bottom: 0.18em;
+        margin-bottom: -0.18em;
+        vertical-align: bottom;
+      }
+
+      .word > span {
+        display: inline-block;
+        animation: rise 620ms var(--ease-out) both;
+      }
+
+      .lede {
+        margin: 1.5rem 0 0;
+        font-size: 1.125rem;
+        line-height: 1.6;
+        color: rgb(var(--c-ink-soft));
+        animation: fadeUp 460ms var(--ease-out) both;
+        animation-delay: 400ms;
+      }
+
+      .lede strong {
+        font-weight: 600;
+        color: rgb(var(--c-ink));
+      }
+
+      .cta-wrap {
+        margin-top: 2.25rem;
+        animation: fadeUp 460ms var(--ease-out) both;
+        animation-delay: 520ms;
+      }
+
+      /* ==========================================================================
+         O botão. É a única ação da página, então herda o pill do design system e
+         cresce: 60px de altura contra os 44px mínimos de alvo de toque.
+         O halo pulsa por box-shadow e nunca por scale, para não empurrar layout.
+         ========================================================================== */
+      .cta {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        min-height: 60px;
+        padding: 1.125rem 1.5rem;
+        border-radius: 9999px;
+        background: rgb(var(--c-brand));
+        color: rgb(var(--c-canvas));
+        font-family: inherit;
+        font-size: 1.0625rem;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        text-decoration: none;
+        transition:
+          background-color 200ms,
+          transform 200ms;
+        animation: ctaReady 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+      }
+
+      .cta:hover {
+        background: rgb(var(--c-brand-hover));
+      }
+
+      .cta:active {
+        transform: scale(0.98);
+      }
+
+      .reassure {
+        margin: 1rem 0 0;
+        text-align: center;
+        font-size: 0.8125rem;
+        line-height: 1.25rem;
+        color: rgb(var(--c-ink-mute));
+        animation: fadeIn 340ms ease-out both;
+        animation-delay: 720ms;
+      }
+
+      .foot {
+        flex-shrink: 0;
+        padding-top: 2rem;
+        font-size: 0.6875rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.22em;
+        color: rgb(var(--c-ink-mute));
+        animation: fadeIn 340ms ease-out both;
+        animation-delay: 840ms;
+      }
+
+      /* ========================================================================== */
+
+      @keyframes rise {
+        from {
+          transform: translateY(120%);
+        }
+        to {
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(14px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      /* Atravessa em 3s e descansa 1s parada no canto oposto. A pausa é o que
+         impede o canto de virar algo que o olho fica conferindo. */
+      @keyframes orbSweep {
+        0% {
+          transform: translateX(0);
+        }
+        75% {
+          transform: translateX(360px);
+        }
+        100% {
+          transform: translateX(360px);
+        }
+      }
+
+      @keyframes ctaReady {
+        0%,
+        100% {
+          box-shadow:
+            0 14px 30px -12px rgb(var(--c-brand) / 0.55),
+            0 0 0 0 rgb(var(--c-brand) / 0.35);
+        }
+        50% {
+          box-shadow:
+            0 14px 30px -12px rgb(var(--c-brand) / 0.55),
+            0 0 18px 12px rgb(var(--c-brand) / 0);
+        }
+      }
+
+      /*
+       * O delay é zerado junto com a duração, e não só ela: as palavras do
+       * headline usam fill both, então zerar apenas a duração as deixaria
+       * invisíveis até o delay vencer.
+       */
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          animation-delay: 0ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="backdrop" aria-hidden="true">
+      <div class="backdrop__wash"></div>
+      <div class="backdrop__field"></div>
+
+      <!--
+        A orb neural: a rede desenhada como esfera, o mesmo motivo que a Athena do
+        logo carrega sobre o capacete. Sangra pelos dois cantos de propósito, um
+        círculo inteiro no canto lê como adesivo.
+
+        Duas cópias da mesma rede: uma em repouso, e uma mais forte mascarada por
+        uma banda de luz na diagonal. O que acende são os nós e os fios, não um
+        reflexo passando por cima. Se a máscara falhar, sobra a rede em repouso.
+      -->
+      <svg class="backdrop__orb" viewBox="0 0 200 200" fill="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="orb-band" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#fff" stop-opacity="0" />
+            <stop offset="35%" stop-color="#fff" stop-opacity="0.35" />
+            <stop offset="50%" stop-color="#fff" stop-opacity="1" />
+            <stop offset="65%" stop-color="#fff" stop-opacity="0.35" />
+            <stop offset="100%" stop-color="#fff" stop-opacity="0" />
+          </linearGradient>
+
+          <!-- userSpaceOnUse, e não o padrão: a região da máscara é um corte duro,
+               e um corte derivado do conteúdo é um corte que anda com ele. -->
+          <mask id="orb-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="200" height="200">
+            <g transform="rotate(-45 100 100)">
+              <rect
+                style="animation: orbSweep 4s linear infinite"
+                x="-140"
+                y="-60"
+                width="110"
+                height="320"
+                fill="url(#orb-band)"
+              />
+            </g>
+          </mask>
+        </defs>
+
+        <!-- Em repouso -->
+        <g stroke="rgb(var(--c-brand))" fill="none">
+          <circle cx="100" cy="100" r="80" stroke-opacity="0.1" stroke-width="0.6" />
+          <ellipse cx="100" cy="100" rx="80" ry="30" stroke-opacity="0.07" stroke-width="0.6" />
+          <ellipse cx="100" cy="100" rx="30" ry="80" stroke-opacity="0.07" stroke-width="0.6" />
+          <path
+            stroke-opacity="0.18"
+            stroke-width="0.7"
+            stroke-linecap="round"
+            d="M176.1 124.7L137.6 170.6M137.6 170.6L77.9 176.9M77.9 176.9L30.7 140M30.7 140L23.1 77.9M23.1 77.9L60 30.7M60 30.7L119.4 22.4M119.4 22.4L169.3 60M176.1 124.7L169.3 60M176.1 124.7L139 77.5M137.6 170.6L96.1 144.8M77.9 176.9L96.1 144.8M30.7 140L61 122.5M23.1 77.9L64.5 72.3M60 30.7L103.9 55.2M119.4 22.4L103.9 55.2M169.3 60L139 77.5M134.5 128.9L100 100M96.1 144.8L100 100M61 122.5L100 100M64.5 72.3L100 100M103.9 55.2L100 100M139 77.5L100 100M96.1 144.8L86 78M139 77.5L86 78M134.5 128.9L86 78"
+          />
+        </g>
+        <g fill="rgb(var(--c-brand))" stroke="none">
+          <g fill-opacity="0.22">
+            <circle cx="176.1" cy="124.7" r="3" /><circle cx="137.6" cy="170.6" r="3" />
+            <circle cx="77.9" cy="176.9" r="3" /><circle cx="30.7" cy="140" r="3" />
+            <circle cx="23.1" cy="77.9" r="3" /><circle cx="60" cy="30.7" r="3" />
+            <circle cx="119.4" cy="22.4" r="3" /><circle cx="169.3" cy="60" r="3" />
+          </g>
+          <g fill-opacity="0.3">
+            <circle cx="134.5" cy="128.9" r="3.6" /><circle cx="96.1" cy="144.8" r="3.6" />
+            <circle cx="61" cy="122.5" r="3.6" /><circle cx="64.5" cy="72.3" r="3.6" />
+            <circle cx="103.9" cy="55.2" r="3.6" /><circle cx="139" cy="77.5" r="3.6" />
+          </g>
+          <g fill-opacity="0.42">
+            <circle cx="100" cy="100" r="4.6" /><circle cx="86" cy="78" r="4.6" />
+          </g>
+        </g>
+
+        <!-- Acesa, por baixo da banda. Só soma, nunca subtrai. -->
+        <g mask="url(#orb-mask)">
+          <g stroke="rgb(var(--c-brand))" fill="none">
+            <circle cx="100" cy="100" r="80" stroke-opacity="0.14" stroke-width="0.6" />
+            <ellipse cx="100" cy="100" rx="80" ry="30" stroke-opacity="0.1" stroke-width="0.6" />
+            <ellipse cx="100" cy="100" rx="30" ry="80" stroke-opacity="0.1" stroke-width="0.6" />
+            <path
+              stroke-opacity="0.32"
+              stroke-width="0.7"
+              stroke-linecap="round"
+              d="M176.1 124.7L137.6 170.6M137.6 170.6L77.9 176.9M77.9 176.9L30.7 140M30.7 140L23.1 77.9M23.1 77.9L60 30.7M60 30.7L119.4 22.4M119.4 22.4L169.3 60M176.1 124.7L169.3 60M176.1 124.7L139 77.5M137.6 170.6L96.1 144.8M77.9 176.9L96.1 144.8M30.7 140L61 122.5M23.1 77.9L64.5 72.3M60 30.7L103.9 55.2M119.4 22.4L103.9 55.2M169.3 60L139 77.5M134.5 128.9L100 100M96.1 144.8L100 100M61 122.5L100 100M64.5 72.3L100 100M103.9 55.2L100 100M139 77.5L100 100M96.1 144.8L86 78M139 77.5L86 78M134.5 128.9L86 78"
+            />
+          </g>
+          <g fill="rgb(var(--c-brand))" stroke="none">
+            <g fill-opacity="0.38">
+              <circle cx="176.1" cy="124.7" r="3" /><circle cx="137.6" cy="170.6" r="3" />
+              <circle cx="77.9" cy="176.9" r="3" /><circle cx="30.7" cy="140" r="3" />
+              <circle cx="23.1" cy="77.9" r="3" /><circle cx="60" cy="30.7" r="3" />
+              <circle cx="119.4" cy="22.4" r="3" /><circle cx="169.3" cy="60" r="3" />
+            </g>
+            <g fill-opacity="0.46">
+              <circle cx="134.5" cy="128.9" r="3.6" /><circle cx="96.1" cy="144.8" r="3.6" />
+              <circle cx="61" cy="122.5" r="3.6" /><circle cx="64.5" cy="72.3" r="3.6" />
+              <circle cx="103.9" cy="55.2" r="3.6" /><circle cx="139" cy="77.5" r="3.6" />
+            </g>
+            <g fill-opacity="0.55">
+              <circle cx="100" cy="100" r="4.6" /><circle cx="86" cy="78" r="4.6" />
+            </g>
+          </g>
+        </g>
+      </svg>
+
+      <div class="backdrop__grain"></div>
+    </div>
+
+    <main class="shell">
+      <header class="lockup">
+        <img src="/assets/forecast-logo.png" alt="AI Forum Forecast" width="320" height="161" />
+      </header>
+
+      <div class="hero">
+        <h1>
+          <span class="word"><span style="animation-delay: 0ms">Vote</span></span>
+          <span class="word"><span style="animation-delay: 80ms">no</span></span>
+          <br />
+          <em>
+            <span class="word"><span style="animation-delay: 160ms">AI</span></span>
+            <span class="word"><span style="animation-delay: 240ms">Forum</span></span>
+            <span class="word"><span style="animation-delay: 320ms">Forecast</span></span>
+          </em>
+        </h1>
+
+        <p class="lede">
+          A votação leva menos de um minuto.
+          <strong>Cada voto conta na apuração final.</strong>
+        </p>
+
+        <div class="cta-wrap">
+          <!-- ==========================================================
+               TROQUE APENAS ESTA URL.
+               É o único lugar do projeto inteiro onde ela aparece.
+               ========================================================== -->
+          <a class="cta" href="__VOTE_URL__" rel="noopener">Votar agora</a>
+        </div>
+
+        <p class="reassure">Você vai direto para a página oficial de votação.</p>
+      </div>
+
+      <footer class="foot">Poli AI Club</footer>
+    </main>
+  </body>
+</html>
