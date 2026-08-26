@@ -9,11 +9,10 @@ botão pill e a mesma orb neural do hero.
 
 ## Trocar a URL de votação
 
-Abra `index.html`, procure `__VOTE_URL__` e substitua pela URL oficial. Ela aparece em um
-lugar só, no `href` do botão:
+A URL fica em um lugar só, no `href` do botão em `index.html`:
 
 ```html
-<a class="cta" href="__VOTE_URL__" rel="noopener">Votar agora</a>
+<a class="cta" href="https://www.surveys.online/jfe/form/SV_3WVlarGQOybxFNY" rel="noopener">Votar agora</a>
 ```
 
 Um `git push` na `main` publica a alteração, a Vercel refaz o deploy sozinha.
