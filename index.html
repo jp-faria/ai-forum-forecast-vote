@@ -77,6 +77,8 @@
         --c-ink: 30 34 51;
         --c-ink-soft: 107 102 96;
         --c-ink-mute: 114 108 102;
+        --c-hairline: 229 220 204;
+        --c-hairline-strong: 213 201 181;
         --c-brand: 47 65 142;
         --c-brand-hover: 36 49 103;
 
@@ -331,6 +333,61 @@
         animation-delay: 720ms;
       }
 
+      /* ==========================================================================
+         As duas ações secundárias. Contorno em vez de preenchimento, e o .btn-ghost
+         do design system: a página continua tendo um botão só que se lê como
+         botão de longe, e estas duas ficam disponíveis sem disputar com ele.
+
+         flex-wrap com base de 9.5rem empilha sozinho quando não cabem lado a
+         lado, o que dispensa media query e cobre o iPhone SE.
+         ========================================================================== */
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.625rem;
+        margin-top: 1.5rem;
+        animation: fadeUp 460ms var(--ease-out) both;
+        animation-delay: 800ms;
+      }
+
+      .btn-ghost {
+        display: inline-flex;
+        flex: 1 1 9.5rem;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        min-height: 48px;
+        padding: 0.75rem 1rem;
+        border: 1px solid rgb(var(--c-hairline-strong));
+        border-radius: 9999px;
+        background: transparent;
+        color: rgb(var(--c-ink));
+        font-family: inherit;
+        font-size: 0.875rem;
+        font-weight: 500;
+        text-decoration: none;
+        white-space: nowrap;
+        transition:
+          border-color 200ms,
+          background-color 200ms,
+          transform 200ms;
+      }
+
+      .btn-ghost:hover {
+        border-color: rgb(var(--c-ink));
+        background: rgb(var(--c-raised));
+      }
+
+      .btn-ghost:active {
+        transform: scale(0.98);
+      }
+
+      .btn-ghost svg {
+        flex-shrink: 0;
+        width: 16px;
+        height: 16px;
+      }
+
       .foot {
         flex-shrink: 0;
         padding-top: 2rem;
@@ -340,7 +397,7 @@
         letter-spacing: 0.22em;
         color: rgb(var(--c-ink-mute));
         animation: fadeIn 340ms ease-out both;
-        animation-delay: 840ms;
+        animation-delay: 900ms;
       }
 
       /* ========================================================================== */
@@ -399,6 +456,39 @@
           box-shadow:
             0 14px 30px -12px rgb(var(--c-brand) / 0.55),
             0 0 18px 12px rgb(var(--c-brand) / 0);
+        }
+      }
+
+      /*
+       * Telas baixas (iPhone SE e afins). Com três ações a coluna não cabe mais
+       * em 568px de altura, então o ritmo aperta aqui e só aqui: nada disso toca
+       * o layout de um telefone de tamanho normal, que é o caso comum.
+       */
+      @media (max-height: 680px) {
+        .lockup img {
+          height: 3rem;
+        }
+        .hero {
+          padding: 1rem 0;
+        }
+        h1 {
+          font-size: clamp(1.625rem, 7.4vw, 2rem);
+        }
+        .lede {
+          margin-top: 1rem;
+          font-size: 1rem;
+        }
+        .cta-wrap {
+          margin-top: 1.5rem;
+        }
+        .reassure {
+          margin-top: 0.75rem;
+        }
+        .actions {
+          margin-top: 1rem;
+        }
+        .foot {
+          padding-top: 1rem;
         }
       }
 
@@ -555,6 +645,37 @@
         </div>
 
         <p class="reassure">Você vai direto para a página oficial de votação.</p>
+
+        <!--
+          As duas secundárias abrem em aba nova de propósito: quem ainda não votou
+          não perde esta página ao ir conhecer o projeto ou puxar conversa.
+        -->
+        <div class="actions">
+          <a
+            class="btn-ghost"
+            href="https://ai-forum-prediction-market-deploy.vercel.app/play"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M7 17 17 7M9 7h8v8" />
+            </svg>
+            Testar o projeto
+          </a>
+
+          <a
+            class="btn-ghost"
+            href="https://wa.me/5511988382196?text=Boa%20tarde%2C%20usei%20o%20app%20no%20AI%20%26%20Digital%20Forum%20e%20gostaria%20de%20entrar%20em%20contato%20com%20o%20Poli%20AI."
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884a9.82 9.82 0 0 1 6.993 2.898 9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z" />
+            </svg>
+            Falar com o Poli AI
+          </a>
+        </div>
       </div>
 
       <footer class="foot">Poli AI Club</footer>
